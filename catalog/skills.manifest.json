@@ -1,4 +1,65 @@
 {
   "schemaVersion": 1,
-  "skills": []
+  "skills": [
+    {
+      "id": "imagegen",
+      "slug": "imagegen",
+      "path": "skills/.curated/imagegen",
+      "version": "1.0.0",
+      "channel": "stable",
+      "title": "Imagegen",
+      "summary": "Use when the user asks to generate or edit images via the OpenAI Image API (for example: generate image, edit/inpaint/mask, background removal or replacement, transparent background, product shots, concept art, covers, or batch variants); run the bundled CLI (`scripts/image_gen.py`) and require `OPENAI_API_KEY` for live calls.",
+      "description": "Use when the user asks to generate or edit images via the OpenAI Image API (for example: generate image, edit/inpaint/mask, background removal or replacement, transparent background, product shots, concept art, covers, or batch variants); run the bundled CLI (`scripts/image_gen.py`) and require `OPENAI_API_KEY` for live calls.",
+      "icon": "🧠",
+      "skillName": "imagegen"
+    },
+    {
+      "id": "notion-knowledge-capture",
+      "slug": "notion-knowledge-capture",
+      "path": "skills/.curated/notion-knowledge-capture",
+      "version": "1.0.0",
+      "channel": "stable",
+      "title": "Notion Knowledge Capture",
+      "summary": "Capture conversations and decisions into structured Notion pages; use when turning chats/notes into wiki entries, how-tos, decisions, or FAQs with proper linking.",
+      "description": "Capture conversations and decisions into structured Notion pages; use when turning chats/notes into wiki entries, how-tos, decisions, or FAQs with proper linking.",
+      "icon": "🧠",
+      "skillName": "notion-knowledge-capture"
+    },
+    {
+      "id": "notion-meeting-intelligence",
+      "slug": "notion-meeting-intelligence",
+      "path": "skills/.curated/notion-meeting-intelligence",
+      "version": "1.0.0",
+      "channel": "stable",
+      "title": "Notion Meeting Intelligence",
+      "summary": "Prepare meeting materials with Notion context and Codex research; use when gathering context, drafting agendas/pre-reads, and tailoring materials to attendees.",
+      "description": "Prepare meeting materials with Notion context and Codex research; use when gathering context, drafting agendas/pre-reads, and tailoring materials to attendees.",
+      "icon": "🧠",
+      "skillName": "notion-meeting-intelligence"
+    },
+    {
+      "id": "pdf",
+      "slug": "pdf",
+      "path": "skills/.curated/pdf",
+      "version": "1.0.0",
+      "channel": "stable",
+      "title": "Pdf",
+      "summary": "Use when tasks involve reading, creating, or reviewing PDF files where rendering and layout matter; prefer visual checks by rendering pages (Poppler) and use Python tools such as `reportlab`, `pdfplumber`, and `pypdf` for generation and extraction.",
+      "description": "Use when tasks involve reading, creating, or reviewing PDF files where rendering and layout matter; prefer visual checks by rendering pages (Poppler) and use Python tools such as `reportlab`, `pdfplumber`, and `pypdf` for generation and extraction.",
+      "icon": "🧠",
+      "skillName": "pdf"
+    },
+    {
+      "id": "spreadsheet",
+      "slug": "spreadsheet",
+      "path": "skills/.curated/spreadsheet",
+      "version": "1.0.0",
+      "channel": "stable",
+      "title": "Spreadsheet",
+      "summary": "Use when tasks involve creating, editing, analyzing, or formatting spreadsheets (`.xlsx`, `.csv`, `.tsv`) using Python (`openpyxl`, `pandas`), especially when formulas, references, and formatting need to be preserved and verified.",
+      "description": "Use when tasks involve creating, editing, analyzing, or formatting spreadsheets (`.xlsx`, `.csv`, `.tsv`) using Python (`openpyxl`, `pandas`), especially when formulas, references, and formatting need to be preserved and verified.",
+      "icon": "🧠",
+      "skillName": "spreadsheet"
+    }
+  ]
 }

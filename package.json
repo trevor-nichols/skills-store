@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "validate:skills": "node scripts/build-catalog.mjs --validate-only",
+    "manifest:check": "node scripts/build-catalog.mjs --manifest-check --validate-only",
+    "manifest:add": "node scripts/build-catalog.mjs --manifest-add",
+    "validate:skills": "npm run manifest:check",
     "build:catalog": "node scripts/build-catalog.mjs"
   }
 }

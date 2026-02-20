@@ -1,3 +1,64 @@
 {
-  "skills": []
+  "skills": [
+    {
+      "id": "imagegen",
+      "slug": "imagegen",
+      "skillName": "imagegen",
+      "title": "Imagegen",
+      "summary": "Use when the user asks to generate or edit images via the OpenAI Image API (for example: generate image, edit/inpaint/mask, background removal or replacement, transparent background, product shots, concept art, covers, or batch variants); run the bundled CLI (`scripts/image_gen.py`) and require `OPENAI_API_KEY` for live calls.",
+      "description": "Use when the user asks to generate or edit images via the OpenAI Image API (for example: generate image, edit/inpaint/mask, background removal or replacement, transparent background, product shots, concept art, covers, or batch variants); run the bundled CLI (`scripts/image_gen.py`) and require `OPENAI_API_KEY` for live calls.",
+      "icon": "🧠",
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/trevor-nichols/skills-store/releases/download/v0.1.1/imagegen-1.0.0.zip",
+      "sha256": "139c3748c811659f6823a4cfc2675f85bb1c060a6fc60ad8c464c0cef1e97149"
+    },
+    {
+      "id": "notion-knowledge-capture",
+      "slug": "notion-knowledge-capture",
+      "skillName": "notion-knowledge-capture",
+      "title": "Notion Knowledge Capture",
+      "summary": "Capture conversations and decisions into structured Notion pages; use when turning chats/notes into wiki entries, how-tos, decisions, or FAQs with proper linking.",
+      "description": "Capture conversations and decisions into structured Notion pages; use when turning chats/notes into wiki entries, how-tos, decisions, or FAQs with proper linking.",
+      "icon": "🧠",
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/trevor-nichols/skills-store/releases/download/v0.1.1/notion-knowledge-capture-1.0.0.zip",
+      "sha256": "50c894f6e866dc4429c12537f2eb3a73767136ace715f1cb34af301dec1fc7ec"
+    },
+    {
+      "id": "notion-meeting-intelligence",
+      "slug": "notion-meeting-intelligence",
+      "skillName": "notion-meeting-intelligence",
+      "title": "Notion Meeting Intelligence",
+      "summary": "Prepare meeting materials with Notion context and Codex research; use when gathering context, drafting agendas/pre-reads, and tailoring materials to attendees.",
+      "description": "Prepare meeting materials with Notion context and Codex research; use when gathering context, drafting agendas/pre-reads, and tailoring materials to attendees.",
+      "icon": "🧠",
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/trevor-nichols/skills-store/releases/download/v0.1.1/notion-meeting-intelligence-1.0.0.zip",
+      "sha256": "302afcbcd82c24c1abd84663329d02dfddde2d0b420d4819256b9a28885af7fc"
+    },
+    {
+      "id": "pdf",
+      "slug": "pdf",
+      "skillName": "pdf",
+      "title": "Pdf",
+      "summary": "Use when tasks involve reading, creating, or reviewing PDF files where rendering and layout matter; prefer visual checks by rendering pages (Poppler) and use Python tools such as `reportlab`, `pdfplumber`, and `pypdf` for generation and extraction.",
+      "description": "Use when tasks involve reading, creating, or reviewing PDF files where rendering and layout matter; prefer visual checks by rendering pages (Poppler) and use Python tools such as `reportlab`, `pdfplumber`, and `pypdf` for generation and extraction.",
+      "icon": "🧠",
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/trevor-nichols/skills-store/releases/download/v0.1.1/pdf-1.0.0.zip",
+      "sha256": "37e34a37e3aa91e979891594d356a5f4965fca9c0bda82f3d3f99351180eb0bd"
+    },
+    {
+      "id": "spreadsheet",
+      "slug": "spreadsheet",
+      "skillName": "spreadsheet",
+      "title": "Spreadsheet",
+      "summary": "Use when tasks involve creating, editing, analyzing, or formatting spreadsheets (`.xlsx`, `.csv`, `.tsv`) using Python (`openpyxl`, `pandas`), especially when formulas, references, and formatting need to be preserved and verified.",
+      "description": "Use when tasks involve creating, editing, analyzing, or formatting spreadsheets (`.xlsx`, `.csv`, `.tsv`) using Python (`openpyxl`, `pandas`), especially when formulas, references, and formatting need to be preserved and verified.",
+      "icon": "🧠",
+      "version": "1.0.0",
+      "packageUrl": "https://github.com/trevor-nichols/skills-store/releases/download/v0.1.1/spreadsheet-1.0.0.zip",
+      "sha256": "5346a9f5cab3bd358b213f21519d2e16e13e7bea3bde18332a363bbff1068263"
+    }
+  ]
 }

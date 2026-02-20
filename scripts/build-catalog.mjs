@@ -2,8 +2,8 @@
 
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { basename, dirname, isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const CHANNELS = new Set(["stable", "beta"]);
@@ -25,6 +25,8 @@ function parseArgs(argv) {
     output: defaultOutputPath,
     repo: "",
     tag: "",
+    manifestCheck: false,
+    manifestAdd: "",
     validateOnly: false,
   };
 
@@ -36,6 +38,10 @@ function parseArgs(argv) {
     }
     if (token === "--validate-only") {
       args.validateOnly = true;
+      continue;
+    }
+    if (token === "--manifest-check") {
+      args.manifestCheck = true;
       continue;
     }
     if (!token.startsWith("--")) {
@@ -65,6 +71,10 @@ function parseArgs(argv) {
       args.tag = value.trim();
       continue;
     }
+    if (key === "--manifest-add") {
+      args.manifestAdd = value.trim();
+      continue;
+    }
     fail(`Unknown argument "${key}"`);
   }
 
@@ -82,6 +92,8 @@ Options
   --output <path>        Output directory for packages/catalog artifacts (default: dist).
   --repo <owner/name>    GitHub repository slug for package URLs (required unless --validate-only).
   --tag <tag>            Release tag used in package URLs (required unless --validate-only).
+  --manifest-check       Fail if any skills/<channel>/<slug>/SKILL.md is missing from manifest.
+  --manifest-add <path>  Add a manifest entry scaffold for a skill directory.
   --help                 Show this help.
 `;
   console.log(text.trim());
@@ -100,6 +112,25 @@ function parseJsonFile(path) {
   } catch (error) {
     fail(`Manifest is not valid JSON (${path}): ${String(error)}`);
   }
+}
+
+function readManifestDocument(manifestPath) {
+  const manifest = parseJsonFile(manifestPath);
+  if (manifest.schemaVersion !== 1) {
+    fail(`Unsupported schemaVersion "${manifest.schemaVersion}". Expected 1.`);
+  }
+  if (!Array.isArray(manifest.skills)) {
+    fail(`Manifest must contain a "skills" array.`);
+  }
+  return manifest;
+}
+
+function normalizeRelativePath(pathValue) {
+  return String(pathValue ?? "")
+    .trim()
+    .replace(/\\/g, "/")
+    .replace(/^\.\//, "")
+    .replace(/\/+$/, "");
 }
 
 function assertInsideRepo(path) {
@@ -183,13 +214,7 @@ function normalizeChannel(value) {
 }
 
 function buildManifestEntries(manifestPath) {
-  const manifest = parseJsonFile(manifestPath);
-  if (manifest.schemaVersion !== 1) {
-    fail(`Unsupported schemaVersion "${manifest.schemaVersion}". Expected 1.`);
-  }
-  if (!Array.isArray(manifest.skills)) {
-    fail(`Manifest must contain a "skills" array.`);
-  }
+  const manifest = readManifestDocument(manifestPath);
 
   const seenIds = new Set();
   const seenSlugs = new Set();
@@ -275,6 +300,147 @@ function buildManifestEntries(manifestPath) {
   });
 
   return entries.sort((left, right) => left.id.localeCompare(right.id));
+}
+
+function discoverSkillDirectories() {
+  const skillsRoot = resolve(repoRoot, "skills");
+  if (!existsSync(skillsRoot)) {
+    return [];
+  }
+
+  const channels = readdirSync(skillsRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => resolve(skillsRoot, entry.name));
+
+  const discovered = [];
+  for (const channelPath of channels) {
+    const entries = readdirSync(channelPath, { withFileTypes: true }).filter((entry) =>
+      entry.isDirectory(),
+    );
+    for (const entry of entries) {
+      const skillDir = resolve(channelPath, entry.name);
+      const skillMdPath = resolve(skillDir, "SKILL.md");
+      if (!existsSync(skillMdPath)) {
+        continue;
+      }
+      discovered.push({
+        absoluteSkillPath: skillDir,
+        relativeSkillPath: normalizeRelativePath(relative(repoRoot, skillDir)),
+      });
+    }
+  }
+
+  return discovered.sort((left, right) => left.relativeSkillPath.localeCompare(right.relativeSkillPath));
+}
+
+function inferChannelFromSkillPath(relativeSkillPath) {
+  if (relativeSkillPath.startsWith("skills/.experimental/")) {
+    return "beta";
+  }
+  return "stable";
+}
+
+function resolveSkillDirectory(inputPath) {
+  const normalized = String(inputPath ?? "").trim();
+  if (!normalized) {
+    fail(`--manifest-add requires a non-empty path.`);
+  }
+  const absoluteSkillPath = resolve(repoRoot, normalized);
+  assertInsideRepo(absoluteSkillPath);
+  if (!existsSync(absoluteSkillPath)) {
+    fail(`Skill directory does not exist: ${normalized}`);
+  }
+  let stat;
+  try {
+    stat = statSync(absoluteSkillPath);
+  } catch (error) {
+    fail(`Unable to inspect skill path ${normalized}: ${String(error)}`);
+  }
+  if (!stat.isDirectory()) {
+    fail(`Skill path must be a directory: ${normalized}`);
+  }
+  const skillMdPath = resolve(absoluteSkillPath, "SKILL.md");
+  if (!existsSync(skillMdPath)) {
+    fail(`Missing SKILL.md in ${normalized}`);
+  }
+  return absoluteSkillPath;
+}
+
+function makeManifestEntryFromSkillPath(skillDirPath) {
+  const relativeSkillPath = normalizeRelativePath(relative(repoRoot, skillDirPath));
+  const frontmatter = parseFrontmatter(resolve(skillDirPath, "SKILL.md"));
+  const slug = validateSlug(basename(skillDirPath), "--manifest-add");
+  const title = toTitle(slug);
+  const skillName = String(frontmatter.name ?? slug).trim();
+  const description = String(frontmatter.description ?? title).trim();
+  const summary = description;
+  const channel = inferChannelFromSkillPath(relativeSkillPath);
+
+  return {
+    id: slug,
+    slug,
+    path: relativeSkillPath,
+    version: "1.0.0",
+    channel,
+    title,
+    summary,
+    description,
+    icon: "🧠",
+    skillName,
+  };
+}
+
+function addManifestEntry(manifestPath, skillInputPath) {
+  const existing = buildManifestEntries(manifestPath);
+  const manifest = readManifestDocument(manifestPath);
+  const skillDirPath = resolveSkillDirectory(skillInputPath);
+  const nextEntry = makeManifestEntryFromSkillPath(skillDirPath);
+
+  const normalizedPath = normalizeRelativePath(nextEntry.path).toLowerCase();
+  if (existing.some((entry) => normalizeRelativePath(entry.relativeSkillPath).toLowerCase() === normalizedPath)) {
+    fail(`Manifest already contains path ${nextEntry.path}`);
+  }
+  if (existing.some((entry) => entry.id.toLowerCase() === nextEntry.id.toLowerCase())) {
+    fail(`Manifest already contains id ${nextEntry.id}`);
+  }
+  if (existing.some((entry) => entry.slug.toLowerCase() === nextEntry.slug.toLowerCase())) {
+    fail(`Manifest already contains slug ${nextEntry.slug}`);
+  }
+
+  const nextSkills = [...manifest.skills, nextEntry].sort((left, right) =>
+    String(left.id ?? "").localeCompare(String(right.id ?? "")),
+  );
+  writeJson(manifestPath, {
+    ...manifest,
+    skills: nextSkills,
+  });
+  buildManifestEntries(manifestPath);
+  console.log(`Added manifest entry for ${nextEntry.path} (${nextEntry.id}).`);
+}
+
+function runManifestCoverageCheck(manifestPath) {
+  const entries = buildManifestEntries(manifestPath);
+  const manifestPaths = new Set(
+    entries.map((entry) => normalizeRelativePath(entry.relativeSkillPath).toLowerCase()),
+  );
+  const discovered = discoverSkillDirectories();
+  const missing = discovered.filter(
+    (entry) => !manifestPaths.has(normalizeRelativePath(entry.relativeSkillPath).toLowerCase()),
+  );
+
+  if (missing.length > 0) {
+    const lines = missing
+      .map(
+        (entry) =>
+          `  - ${entry.relativeSkillPath} (add via: node scripts/build-catalog.mjs --manifest-add ${entry.relativeSkillPath})`,
+      )
+      .join("\n");
+    fail(
+      `Manifest coverage check failed.\nMissing ${missing.length} skill(s) from catalog/skills.manifest.json:\n${lines}`,
+    );
+  }
+
+  console.log(`Manifest coverage check passed: ${discovered.length} discovered, ${entries.length} manifest entries.`);
 }
 
 function ensureZipAvailable() {
@@ -369,10 +535,22 @@ function main() {
 
   const manifestPath = resolve(repoRoot, args.manifest);
   assertInsideRepo(manifestPath);
+
+  if (args.manifestAdd) {
+    addManifestEntry(manifestPath, args.manifestAdd);
+  }
+  if (args.manifestCheck) {
+    runManifestCoverageCheck(manifestPath);
+  }
+
   const entries = buildManifestEntries(manifestPath);
 
   if (args.validateOnly) {
     console.log(`Manifest valid: ${entries.length} skill(s) ready.`);
+    return;
+  }
+
+  if (!args.repo && !args.tag && (args.manifestAdd || args.manifestCheck)) {
     return;
   }
 

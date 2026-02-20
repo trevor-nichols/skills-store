@@ -29,11 +29,17 @@ skills-store/
    - `skills/.system/<slug>/`
    - `skills/.experimental/<slug>/`
 2. Ensure each skill directory contains `SKILL.md`.
-3. Add a metadata entry to `catalog/skills.manifest.json`.
-4. Run validation:
+3. Add a manifest scaffold entry:
 
 ```bash
-node scripts/build-catalog.mjs --validate-only
+npm run manifest:add -- skills/.curated/<slug>
+```
+
+4. Update manifest metadata as needed (`version`, `summary`, `description`, `icon`).
+5. Run validation:
+
+```bash
+npm run manifest:check
 ```
 
 ## Manifest format
@@ -73,6 +79,10 @@ Optional (auto-filled if omitted):
 - `icon` (defaults to `🧠`)
 - `channel` (`stable` default, or `beta`)
 - `assetName` (defaults to `<slug>-<version>.zip`)
+
+Manifest tooling:
+- `npm run manifest:add -- <skill-dir>`: append a scaffolded entry.
+- `npm run manifest:check`: fail if any `skills/*/*/SKILL.md` is not in the manifest.
 
 ## Build and publish
 

@@ -19,4 +19,4 @@ jobs:
           node-version: "20"
 
       - name: Validate manifest and skill folders
-        run: node scripts/build-catalog.mjs --validate-only
+        run: npm run manifest:check
