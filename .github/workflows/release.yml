@@ -1,0 +1,36 @@
+name: Release Skills Catalog
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build packages and catalogs
+        run: |
+          node scripts/build-catalog.mjs \
+            --repo "${GITHUB_REPOSITORY}" \
+            --tag "${GITHUB_REF_NAME}"
+
+      - name: Publish release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/packages/*.zip
+            dist/catalog/stable.json
+            dist/catalog/beta.json
+            dist/catalog/checksums.txt

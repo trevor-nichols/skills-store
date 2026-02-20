@@ -1,0 +1,10 @@
+{
+  "name": "skills-store",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate:skills": "node scripts/build-catalog.mjs --validate-only",
+    "build:catalog": "node scripts/build-catalog.mjs"
+  }
+}
