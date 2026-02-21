@@ -129,33 +129,40 @@ def read_frontmatter_name(skill_dir):
     return name.strip()
 
 
-def parse_interface_overrides(raw_overrides):
+def parse_interface_overrides(
+    raw_overrides: list[str],
+) -> tuple[dict[str, str], list[str]] | None:
     overrides = {}
     optional_order = []
     for item in raw_overrides:
         if "=" not in item:
             print(f"[ERROR] Invalid interface override '{item}'. Use key=value.")
-            return None, None
+            return None
         key, value = item.split("=", 1)
         key = key.strip()
         value = value.strip()
         if not key:
             print(f"[ERROR] Invalid interface override '{item}'. Key is empty.")
-            return None, None
+            return None
         if key not in ALLOWED_INTERFACE_KEYS:
             allowed = ", ".join(sorted(ALLOWED_INTERFACE_KEYS))
             print(f"[ERROR] Unknown interface field '{key}'. Allowed: {allowed}")
-            return None, None
+            return None
         overrides[key] = value
         if key not in ("display_name", "short_description") and key not in optional_order:
             optional_order.append(key)
     return overrides, optional_order
 
 
-def write_openai_yaml(skill_dir, skill_name, raw_overrides):
-    overrides, optional_order = parse_interface_overrides(raw_overrides)
-    if overrides is None:
+def write_openai_yaml(
+    skill_dir: Path,
+    skill_name: str,
+    raw_overrides: list[str],
+) -> Path | None:
+    parsed = parse_interface_overrides(raw_overrides)
+    if parsed is None:
         return None
+    overrides, optional_order = parsed
 
     display_name = overrides.get("display_name") or format_display_name(skill_name)
     short_description = overrides.get("short_description") or generate_short_description(display_name)
