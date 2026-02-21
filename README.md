@@ -116,3 +116,21 @@ VITE_SKILLS_CATALOG_URLS=https://raw.githubusercontent.com/<owner>/<repo>/main/c
 ```
 
 Or use release assets if you prefer immutable catalog URLs per release.
+
+## Python scripts (uv)
+
+This repo includes Python helper scripts under `scripts/` (for example,
+`scripts/quick_validate.py` and `scripts/generate_openai_yaml.py`).
+
+Set up the Python environment with `uv`:
+
+```bash
+uv sync
+```
+
+Run Python scripts through `uv` so dependencies are resolved from the project:
+
+```bash
+uv run python scripts/quick_validate.py <path/to/skill-folder>
+uv run python scripts/generate_openai_yaml.py <path/to/skill-folder>
+```

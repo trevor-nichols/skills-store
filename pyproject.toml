@@ -1,0 +1,9 @@
+[project]
+name = "skills-store-python-tools"
+version = "0.1.0"
+description = "Python helper scripts for the Skills Store repository."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "PyYAML>=6.0.3,<7.0.0",
+]
+
