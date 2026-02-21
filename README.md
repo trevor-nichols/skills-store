@@ -20,6 +20,9 @@ skills-store/
     .experimental/         # Optional beta/experimental skills
   scripts/
     build-catalog.mjs      # Validate, package, hash, and generate catalogs
+    generate_openai_yaml.py # Generate agents/openai.yaml metadata for a skill
+    init_skill.py           # Scaffold a new skill folder and baseline files
+    quick_validate.py       # Run lightweight SKILL.md/frontmatter validation
 ```
 
 ## Add a skill
