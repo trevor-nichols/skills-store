@@ -33,6 +33,7 @@ npm run manifest:add -- skills/.curated/<slug>
 ```
 
 4. Update manifest metadata as needed (`version`, `summary`, `description`, `icon`).
+   - Optional icon URLs are auto-derived from `agents/openai.yaml` `interface.icon_small` / `interface.icon_large`.
 5. Run validation:
 
 ```bash
@@ -74,6 +75,8 @@ Optional (auto-filled if omitted):
 - `summary` (defaults to description)
 - `description` (defaults to `description` frontmatter, else title)
 - `icon` (defaults to `🧠`)
+- `iconSmallUrl` (optional override; defaults to `interface.icon_small` in `agents/openai.yaml`)
+- `iconLargeUrl` (optional override; defaults to `interface.icon_large` in `agents/openai.yaml`)
 - `channel` (`stable` default, or `beta`)
 - `assetName` (defaults to `<slug>-<version>.zip`)
 

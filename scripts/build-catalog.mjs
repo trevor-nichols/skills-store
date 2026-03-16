@@ -162,6 +162,112 @@ function parseFrontmatter(skillMdPath) {
   return result;
 }
 
+function parseAgentsInterfaceMetadata(skillDirPath) {
+  const metadataPath = resolve(skillDirPath, "agents/openai.yaml");
+  if (!existsSync(metadataPath)) {
+    return {
+      iconSmall: "",
+      iconLarge: "",
+    };
+  }
+
+  const body = readFileSync(metadataPath, "utf8");
+  const lines = body.split(/\r?\n/);
+  let interfaceIndent = null;
+  let inInterface = false;
+  let iconSmall = "";
+  let iconLarge = "";
+
+  for (const line of lines) {
+    if (!inInterface) {
+      const interfaceMatch = line.match(/^(\s*)interface:\s*$/);
+      if (!interfaceMatch) {
+        continue;
+      }
+      inInterface = true;
+      interfaceIndent = interfaceMatch[1].length;
+      continue;
+    }
+
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      continue;
+    }
+
+    const indentMatch = line.match(/^(\s*)/);
+    const indent = indentMatch ? indentMatch[1].length : 0;
+    if (interfaceIndent !== null && indent <= interfaceIndent) {
+      break;
+    }
+
+    const entryMatch = line.match(/^\s*([A-Za-z0-9_]+)\s*:\s*(.*?)\s*$/);
+    if (!entryMatch) {
+      continue;
+    }
+
+    const key = entryMatch[1];
+    const rawValue = entryMatch[2].trim();
+    const value = rawValue.replace(/^['"]|['"]$/g, "").trim();
+    if (!value) {
+      continue;
+    }
+
+    if (key === "icon_small") {
+      iconSmall = value;
+      continue;
+    }
+    if (key === "icon_large") {
+      iconLarge = value;
+    }
+  }
+
+  return {
+    iconSmall,
+    iconLarge,
+  };
+}
+
+function hasUnsupportedScheme(value) {
+  return /^[A-Za-z][A-Za-z0-9+.-]*:/.test(value) && !/^https?:\/\//i.test(value);
+}
+
+function resolveIconUrl(iconPath, entry, repo, tag, fieldLabel) {
+  const normalized = String(iconPath ?? "").trim();
+  if (!normalized) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(normalized)) {
+    return normalized;
+  }
+
+  if (hasUnsupportedScheme(normalized)) {
+    fail(`${entry.entryLabel}: ${fieldLabel} must be an http(s) URL or a skill-relative path.`);
+  }
+
+  const absoluteIconPath = resolve(entry.absoluteSkillPath, normalized);
+  assertInsideRepo(absoluteIconPath);
+
+  const relativeToSkill = relative(entry.absoluteSkillPath, absoluteIconPath);
+  const relativeParts = relativeToSkill.split(/[\\/]/g);
+  if (
+    relativeToSkill.startsWith("..")
+    || relativeParts.includes("..")
+    || isAbsolute(relativeToSkill)
+  ) {
+    fail(`${entry.entryLabel}: ${fieldLabel} must stay inside ${entry.relativeSkillPath}.`);
+  }
+
+  if (!existsSync(absoluteIconPath)) {
+    fail(
+      `${entry.entryLabel}: ${fieldLabel} path does not exist (${normalized}) for ${entry.relativeSkillPath}.`,
+    );
+  }
+
+  const relativeRepoPath = normalizeRelativePath(relative(repoRoot, absoluteIconPath));
+  return encodeURI(`https://raw.githubusercontent.com/${repo}/${tag}/${relativeRepoPath}`);
+}
+
 function toTitle(slug) {
   return slug
     .split(/[-_]/g)
@@ -239,6 +345,7 @@ function buildManifestEntries(manifestPath) {
     }
 
     const frontmatter = parseFrontmatter(skillMdPath);
+    const interfaceMetadata = parseAgentsInterfaceMetadata(absoluteSkillPath);
     const slug = validateSlug(entry.slug ?? basename(absoluteSkillPath), entryLabel);
     const id = String(entry.id ?? slug).trim();
     if (!id) {
@@ -263,6 +370,8 @@ function buildManifestEntries(manifestPath) {
     const icon = String(entry.icon ?? "🧠").trim();
     const channel = normalizeChannel(entry.channel);
     const assetName = String(entry.assetName ?? `${slug}-${version}.zip`).trim();
+    const iconSmall = String(entry.iconSmallUrl ?? interfaceMetadata.iconSmall ?? "").trim();
+    const iconLarge = String(entry.iconLargeUrl ?? interfaceMetadata.iconLarge ?? "").trim();
 
     if (!title) {
       fail(`${entryLabel}: title cannot be empty.`);
@@ -284,6 +393,7 @@ function buildManifestEntries(manifestPath) {
     }
 
     return {
+      entryLabel,
       id,
       slug,
       skillName,
@@ -291,6 +401,8 @@ function buildManifestEntries(manifestPath) {
       summary,
       description,
       icon,
+      iconSmall,
+      iconLarge,
       version,
       channel,
       assetName,
@@ -474,6 +586,8 @@ function writeJson(path, value) {
 }
 
 function buildCatalogEntry(entry, repo, tag, sha256) {
+  const iconSmallUrl = resolveIconUrl(entry.iconSmall, entry, repo, tag, "iconSmallUrl");
+  const iconLargeUrl = resolveIconUrl(entry.iconLarge, entry, repo, tag, "iconLargeUrl");
   return {
     id: entry.id,
     slug: entry.slug,
@@ -485,6 +599,8 @@ function buildCatalogEntry(entry, repo, tag, sha256) {
     version: entry.version,
     packageUrl: `https://github.com/${repo}/releases/download/${tag}/${entry.assetName}`,
     sha256,
+    ...(iconSmallUrl ? { iconSmallUrl } : {}),
+    ...(iconLargeUrl ? { iconLargeUrl } : {}),
   };
 }
 

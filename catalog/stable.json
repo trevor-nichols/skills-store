@@ -10,7 +10,9 @@
       "icon": "🧠",
       "version": "1.0.0",
       "packageUrl": "https://github.com/trevor-nichols/skills-store/releases/download/v0.1.1/imagegen-1.0.0.zip",
-      "sha256": "139c3748c811659f6823a4cfc2675f85bb1c060a6fc60ad8c464c0cef1e97149"
+      "sha256": "139c3748c811659f6823a4cfc2675f85bb1c060a6fc60ad8c464c0cef1e97149",
+      "iconSmallUrl": "https://raw.githubusercontent.com/trevor-nichols/skills-store/v0.1.1/skills/.curated/imagegen/assets/imagegen-small.svg",
+      "iconLargeUrl": "https://raw.githubusercontent.com/trevor-nichols/skills-store/v0.1.1/skills/.curated/imagegen/assets/imagegen.png"
     },
     {
       "id": "notion-knowledge-capture",
@@ -22,7 +24,9 @@
       "icon": "🧠",
       "version": "1.0.0",
       "packageUrl": "https://github.com/trevor-nichols/skills-store/releases/download/v0.1.1/notion-knowledge-capture-1.0.0.zip",
-      "sha256": "50c894f6e866dc4429c12537f2eb3a73767136ace715f1cb34af301dec1fc7ec"
+      "sha256": "50c894f6e866dc4429c12537f2eb3a73767136ace715f1cb34af301dec1fc7ec",
+      "iconSmallUrl": "https://raw.githubusercontent.com/trevor-nichols/skills-store/v0.1.1/skills/.curated/notion-knowledge-capture/assets/notion-small.svg",
+      "iconLargeUrl": "https://raw.githubusercontent.com/trevor-nichols/skills-store/v0.1.1/skills/.curated/notion-knowledge-capture/assets/notion.png"
     },
     {
       "id": "notion-meeting-intelligence",
@@ -34,7 +38,9 @@
       "icon": "🧠",
       "version": "1.0.0",
       "packageUrl": "https://github.com/trevor-nichols/skills-store/releases/download/v0.1.1/notion-meeting-intelligence-1.0.0.zip",
-      "sha256": "302afcbcd82c24c1abd84663329d02dfddde2d0b420d4819256b9a28885af7fc"
+      "sha256": "302afcbcd82c24c1abd84663329d02dfddde2d0b420d4819256b9a28885af7fc",
+      "iconSmallUrl": "https://raw.githubusercontent.com/trevor-nichols/skills-store/v0.1.1/skills/.curated/notion-meeting-intelligence/assets/notion-small.svg",
+      "iconLargeUrl": "https://raw.githubusercontent.com/trevor-nichols/skills-store/v0.1.1/skills/.curated/notion-meeting-intelligence/assets/notion.png"
     },
     {
       "id": "pdf",
@@ -46,7 +52,8 @@
       "icon": "🧠",
       "version": "1.0.0",
       "packageUrl": "https://github.com/trevor-nichols/skills-store/releases/download/v0.1.1/pdf-1.0.0.zip",
-      "sha256": "37e34a37e3aa91e979891594d356a5f4965fca9c0bda82f3d3f99351180eb0bd"
+      "sha256": "37e34a37e3aa91e979891594d356a5f4965fca9c0bda82f3d3f99351180eb0bd",
+      "iconLargeUrl": "https://raw.githubusercontent.com/trevor-nichols/skills-store/v0.1.1/skills/.curated/pdf/assets/pdf.png"
     },
     {
       "id": "spreadsheet",
@@ -58,7 +65,9 @@
       "icon": "🧠",
       "version": "1.0.0",
       "packageUrl": "https://github.com/trevor-nichols/skills-store/releases/download/v0.1.1/spreadsheet-1.0.0.zip",
-      "sha256": "5346a9f5cab3bd358b213f21519d2e16e13e7bea3bde18332a363bbff1068263"
+      "sha256": "5346a9f5cab3bd358b213f21519d2e16e13e7bea3bde18332a363bbff1068263",
+      "iconSmallUrl": "https://raw.githubusercontent.com/trevor-nichols/skills-store/v0.1.1/skills/.curated/spreadsheet/assets/spreadsheet-small.svg",
+      "iconLargeUrl": "https://raw.githubusercontent.com/trevor-nichols/skills-store/v0.1.1/skills/.curated/spreadsheet/assets/spreadsheet.png"
     }
   ]
 }
